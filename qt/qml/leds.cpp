@@ -36,6 +36,12 @@ Leds::Leds(QObject* parent)
 void Leds::setState(Leds::State newState)
 {
     if (m_state != newState) {
+        // Make sure all values are up-to-date before setting state on
+        if (newState == State::On) {
+            m_interface->setColor(m_color.rgba());
+            m_interface->setOnMs(m_onMs);
+            m_interface->setOffMs(m_offMs);
+        }
         m_interface->setState(newState);
         m_state = newState;
         Q_EMIT stateChanged(m_state);
@@ -83,7 +89,7 @@ int Leds::offMillisec() const
 void Leds::setOffMillisec(int offMs)
 {
     if (m_offMs != offMs) {
-        m_interface->setOnMs(offMs);
+        m_interface->setOffMs(offMs);
         m_offMs = offMs;
         Q_EMIT offMillisecChanged(m_offMs);
     }
