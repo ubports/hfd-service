@@ -1,0 +1,3 @@
+usr/bin/hfd-service
+etc/init/hfd-service.conf
+etc/dbus-1/system.d/com.lomiri.hfd.conf

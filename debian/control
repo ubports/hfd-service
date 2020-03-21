@@ -1,0 +1,49 @@
+Source: hfd-service
+Section: admin
+Priority: optional
+Build-Depends: cmake (>= 2.8.10),
+               debhelper (>= 9),
+               pkg-config,
+               libandroid-properties-dev,
+               libhardware-dev,
+               android-headers,
+               libudev-dev,
+               qtbase5-dev,
+               qtfeedback5-dev,
+               cmake-extras
+Maintainer: Marius Gripsgard <marius@ubports.com>
+Standards-Version: 3.9.5
+Homepage: https://github.com/ubports/deviceinfo
+
+Package: hfd-service
+Section: libs
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Description: Library to detect and configure devices 
+ Library to detect and configure devices 
+
+Package: libqt5feedback5-hfd
+Section: libs
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Description: Library to detect and configure devices 
+ Library to detect and configure devices 
+
+Package: qml-module-hfd
+Section: libs
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Description: Library to detect and configure devices 
+ Library to detect and configure devices 
+
+
+Package: hfd-service-tools
+Section: admin
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Description: Tools to detect and configure devices 
+ Tools to detect and configure devices 

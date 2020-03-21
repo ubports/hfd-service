@@ -1,0 +1,5 @@
+hfd-service (0.1.0) xenial; urgency=medium
+
+  * initial release
+
+ -- Marius Gripsgard <marius@ubports.com>  Sat, 21 Mar 2020 02:06:32 +0100
