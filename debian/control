@@ -10,7 +10,8 @@ Build-Depends: cmake (>= 2.8.10),
                libudev-dev,
                qtbase5-dev,
                qtfeedback5-dev,
-               cmake-extras
+               cmake-extras,
+               qtdeclarative5-dev
 Maintainer: Marius Gripsgard <marius@ubports.com>
 Standards-Version: 3.9.5
 Homepage: https://github.com/ubports/deviceinfo
@@ -28,6 +29,7 @@ Section: libs
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
+         hfd-service,
 Description: Library to detect and configure devices 
  Library to detect and configure devices 
 
@@ -36,6 +38,7 @@ Section: libs
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
+         hfd-service,
 Description: Library to detect and configure devices 
  Library to detect and configure devices 
 
@@ -45,5 +48,6 @@ Section: admin
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
+         hfd-service,
 Description: Tools to detect and configure devices 
  Tools to detect and configure devices 
