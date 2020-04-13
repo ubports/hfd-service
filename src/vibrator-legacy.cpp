@@ -23,6 +23,7 @@
 
 // if the kernel support led triggers
 // we set 
+namespace hfd {
 
 bool VibratorLegacy::usable() {
     return access("/sys/class/timed_output/vibrator", F_OK ) != -1;
@@ -50,4 +51,5 @@ void VibratorLegacy::configure(State state, int durationMs) {
     } else {
         m_device.set_sysattr("enable", "0");
     }
+}
 }

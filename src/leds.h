@@ -18,18 +18,15 @@
 
 #pragma once
 
+#include "common.h"
 #include "rgba.h"
 
 #include <memory>
 
+namespace hfd {
 class Leds {
 public:
     Leds();
-
-    enum State {
-        Off,
-        On
-    };
 
     void turnOn(const Rgba &color, int onMs, int offMs);
 
@@ -56,3 +53,4 @@ protected:
     int m_offMs;
     bool m_timer = false;
 };
+}

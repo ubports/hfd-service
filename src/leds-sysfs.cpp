@@ -26,6 +26,7 @@
 // if the kernel support led triggers
 // we set 
 
+namespace hfd {
 bool LedsSysfs::usable() {
     if (access("/sys/class/leds", F_OK ) == -1)
         return false;
@@ -116,4 +117,5 @@ void LedsSysfs::setDelay()
 void LedsSysfs::setLed(Colors color, int value)
 {
     m_rgbDevices[color].set_sysattr("brightness", std::to_string(value));
+}
 }

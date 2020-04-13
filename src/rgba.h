@@ -20,9 +20,11 @@
 
 typedef unsigned int Rgba;  
 
+namespace hfd {
 namespace rgba {
     inline int Red(Rgba rgb) { return ((rgb >> 16) & 0xff); }
     inline int Green(Rgba rgb) { return ((rgb >> 8) & 0xff); }
     inline int Blue(Rgba rgb) { return (rgb & 0xff); }
     inline int Alpha(Rgba rgb) { return rgb >> 24; }
+}
 }

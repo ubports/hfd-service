@@ -23,6 +23,7 @@
 
 #include <iostream>
 
+namespace hfd {
 class VibratorDummy : public Vibrator {
 public:
     VibratorDummy() = default;
@@ -112,4 +113,5 @@ void Vibrator::setDefaultRepeat(int repeat)
     if (m_defaultRepeat != repeat) {
         m_defaultRepeat = repeat;
     }
+}
 }

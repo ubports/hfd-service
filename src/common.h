@@ -16,26 +16,11 @@
  * Author: Marius Gripsgard <marius@ubports.com>
  */
 
-#include <leds.h>
-#include <unistd.h>
+#pragma once
 
-int main() {
-    auto leds = hfd::Leds::create();
-
-    leds->setState(hfd::State::On);
-    sleep(1);
-    leds->setState(hfd::State::Off);
-    leds->setState(hfd::State::On);
-
-    leds->setColor(0xff0000);
-    sleep(10);
-    leds->setColor(0x00ff00);
-    sleep(10);
-    leds->setColor(0x0000ff);
-    sleep(10);
-    leds->setColor(0xbd5751);
-
-    sleep(10);
-    leds->setState(hfd::State::Off);
-
+namespace hfd {
+    enum State {
+        Off,
+        On
+    };
 }

@@ -24,6 +24,7 @@
 
 #include "udev/udev-cpp.h"
 
+namespace hfd {
 class LedsSysfs : public Leds {
 
 public:
@@ -45,3 +46,4 @@ private:
 
     std::map<Colors, Udev::UdevDevice> m_rgbDevices;
 };
+}

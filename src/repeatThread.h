@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <iostream>
 
+namespace hfd {
 class RepeatThread {
     
 public:
@@ -65,3 +66,4 @@ private:
     std::function<void(void)> m_func;
     std::thread m_thread;
 };
+}

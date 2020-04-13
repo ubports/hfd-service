@@ -22,6 +22,7 @@
 
 #include "udev/udev-cpp.h"
 
+namespace hfd {
 class VibratorSysfs : public Vibrator {
 
 public:
@@ -34,3 +35,4 @@ protected:
 private:
     Udev::UdevDevice m_device;
 };
+}

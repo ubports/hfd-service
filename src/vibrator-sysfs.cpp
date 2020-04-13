@@ -23,6 +23,7 @@
 
 // if the kernel support led triggers
 // we set 
+namespace hfd {
 
 bool VibratorSysfs::usable() {
     return access("/sys/class/leds/vibrator", F_OK ) != -1;
@@ -48,4 +49,5 @@ void VibratorSysfs::configure(State state, int durationMs) {
     } else {
         m_device.set_sysattr("activate", "0");
     }
+}
 }

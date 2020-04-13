@@ -28,6 +28,7 @@ extern "C" {
 }
 
 // legacy hybris support
+namespace hfd {
 
 bool LedsHybris::usable() {
     return access("/system/build.prop", F_OK ) != -1;
@@ -104,4 +105,5 @@ void LedsHybris::turnOff()
     if (m_lightDevice->set_light(m_lightDevice, &state) != 0) {
         std::cout << "Failed to turn the light off";
     }
+}
 }

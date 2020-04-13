@@ -23,6 +23,7 @@
 #include <sstream>
 #include <vector>
 
+namespace hfd {
 namespace utils {
     inline std::vector<std::string> split(std::string strToSplit, char delimeter) {
         std::stringstream ss(strToSplit);
@@ -35,9 +36,10 @@ namespace utils {
         return splittedStrings;
     };
 
-    inline Leds::State toLedsState(int state) {
+    inline State toState(int state) {
         if (state == 1)
-            return Leds::State::On;
-        return Leds::State::Off;
+            return State::On;
+        return State::Off;
     }
+}
 }
