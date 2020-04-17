@@ -138,6 +138,9 @@ void UHardwareLight_::setLight(light_state_t state, char const* type)
     else if (0 == strcmp(LIGHT_ID_WIFI, type))
         hidl_type = Type::WIFI;
 
+    ALOGI("setLight: color: %d, flashMode: %d, flashOnMs: %d, flashOffMs: %d, brightnessMode: %d, type: %d\n",
+          hidl_state.color, hidl_state.flashMode, hidl_state.flashOnMs, hidl_state.flashOffMs, hidl_state.brightnessMode, hidl_type);
+
     Status status = lightHal->setLight(hidl_type, hidl_state);
 }
 
