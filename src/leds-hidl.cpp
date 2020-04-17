@@ -55,7 +55,13 @@ void LedsHIDL::turnOn()
     // pulse
     light_state_t state;
     memset(&state, 0, sizeof(light_state_t));
-    state.color = m_color;
+    int alpha = (m_color >> 24) & 0xFF;
+    int red = (m_color >> 16) & 0xFF;
+    int green = (m_color >> 8) & 0xFF;
+    int blue = m_color & 0xFF;
+    alpha = 0xff; //TODO: Support alpha
+    int newcolor = ((alpha & 0xff) << 24) + ((red & 0xff) << 16) + ((green & 0xff) << 8) + (blue & 0xff);
+    state.color = newcolor;
     state.flashMode = LIGHT_FLASH_TIMED;
     state.flashOnMS = m_onMs;
     state.flashOffMS = m_offMs;
