@@ -30,29 +30,49 @@ extern "C" {
 // legacy hybris support
 namespace hfd {
 
-bool LedsHybris::usable() {
-    return access("/system/build.prop", F_OK ) != -1;
-}
-
-LedsHybris::LedsHybris() : Leds() {
+light_device_t* getLightDevice() {
     int err;
     hw_module_t* module;
+    light_device_t* lightDevice;
 
     err = hw_get_module(LIGHTS_HARDWARE_MODULE_ID, (hw_module_t const**)&module);
     if (err == 0) {
         hw_device_t* device;
         err = module->methods->open(module, LIGHT_ID_NOTIFICATIONS, &device);
-        if (err == 0) {
-            m_lightDevice = (light_device_t*)device;
-            turnOff();
-            return;
+        if (err == 0 && device) {
+            lightDevice = (light_device_t*)device;
+            return lightDevice;
         } else {
             std::cout << "Failed to access notification lights" << std::endl;
         }
     } else {
         std::cout << "Failed to initialize lights hardware." << std::endl;
     }
-    
+
+    return nullptr;
+}
+
+bool LedsHybris::usable() {
+    light_device_t* lightDevice = getLightDevice();
+    const bool loaded = (lightDevice != nullptr);
+
+    if (lightDevice) {
+        hw_device_t* device = (hw_device_t*) lightDevice;
+        device->close(device);
+    }
+
+    return loaded;
+}
+
+LedsHybris::LedsHybris() : Leds() {
+    if (m_lightDevice) {
+        return;
+    }
+
+    m_lightDevice = getLightDevice();
+    if (m_lightDevice)
+        turnOff();
+
     // Get up to date
     configure();
 }
@@ -83,6 +103,9 @@ void LedsHybris::turnOn()
     state.flashOffMS = m_offMs;
     state.brightnessMode = BRIGHTNESS_MODE_USER;
 
+    if (!m_lightDevice)
+        return;
+
     if (m_lightDevice->set_light(m_lightDevice, &state) != 0) {
          std::cout << "Failed to turn the light off";
     }
@@ -97,6 +120,9 @@ void LedsHybris::turnOff()
     state.flashOnMS = 0;
     state.flashOffMS = 0;
     state.brightnessMode = 0;
+
+    if (!m_lightDevice)
+        return;
 
     if (m_lightDevice->set_light(m_lightDevice, &state) != 0) {
         std::cout << "Failed to turn the light off";

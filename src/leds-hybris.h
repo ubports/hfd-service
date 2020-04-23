@@ -34,6 +34,6 @@ private:
     void turnOn();
     void turnOff();
 
-    light_device_t* m_lightDevice;
+    light_device_t* m_lightDevice = nullptr;
 };
 }
