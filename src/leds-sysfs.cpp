@@ -23,9 +23,6 @@
 #include <iostream>
 #include <unistd.h>
 
-// if the kernel support led triggers
-// we set 
-
 namespace hfd {
 bool LedsSysfs::usable() {
     if (access("/sys/class/leds", F_OK ) == -1)
@@ -36,11 +33,10 @@ bool LedsSysfs::usable() {
     enumerator.add_match_sysattr("subsystem","leds");
     enumerator.scan_devices();
 
-    bool red, green, blue;
+    bool red, green, blue = false;
     for (auto dev : enumerator.enumerate_devices()) {
         auto splitted = utils::split(dev.get_sysname(), ':');
-        if (splitted.size() == 3) {
-            auto color = splitted[1];
+        for (auto color : splitted) {
             std::cout << "got: " << color << std::endl;
             if (color == "red")
                 red = true;
@@ -63,8 +59,7 @@ LedsSysfs::LedsSysfs(): Leds() {
 
     for (auto dev : enumerator.enumerate_devices()) {
         auto splitted = utils::split(dev.get_sysname(), ':');
-        if (splitted.size() == 3) {
-            auto color = splitted[1];
+        for (auto color : splitted) {
             std::cout << "got: " << color << std::endl;
             if (color == "red")
                 m_rgbDevices[Colors::RED] = dev;
