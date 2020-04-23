@@ -19,16 +19,13 @@
 #pragma once
 
 #include <memory>
+#include "common.h"
 
+namespace hfd {
 class RepeatThread;
 class Vibrator {
 public:
     Vibrator();
-
-    enum State {
-        Off,
-        On
-    };
 
     void vibrate();
     void vibrate(int durationMs);
@@ -50,3 +47,4 @@ protected:
     int m_defaultRepeat;
     std::shared_ptr<RepeatThread> m_repeatThread;
 };
+}

@@ -25,6 +25,7 @@
 #include <memory>
 #include <thread>
 
+namespace hfd {
 class VibratorLegacy : public Vibrator {
 
 public:
@@ -40,3 +41,4 @@ private:
     Udev::UdevDevice m_device;
     std::shared_ptr<std::thread> m_thread;
 };
+}

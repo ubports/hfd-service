@@ -22,6 +22,7 @@
 
 #include <iostream>
 
+namespace hfd {
 class LedsDummy : public Leds {
 public:
     LedsDummy() = default;
@@ -66,19 +67,19 @@ std::shared_ptr<Leds> Leds::create(std::string type)
 
 Leds::Leds()
   : m_color(0x00ff0080),
-    m_state(Leds::Off),
+    m_state(State::Off),
     m_onMs(1000),
     m_offMs(3000)
 {
 }
 
-void Leds::setState(Leds::State newState)
+void Leds::setState(State newState)
 {
     m_state = newState;
     configure();
 }
 
-Leds::State Leds::state() const
+State Leds::state() const
 {
     return m_state;
 }
@@ -123,4 +124,5 @@ void Leds::setOffMs(int offMs)
         if (m_state == State::On)
             configure();
     }
+}
 }

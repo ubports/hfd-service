@@ -20,6 +20,7 @@
 
 struct light_device_t;
 
+namespace hfd {
 class LedsHybris : public Leds {
 public:
     LedsHybris();
@@ -35,3 +36,4 @@ private:
 
     light_device_t* m_lightDevice;
 };
+}

@@ -20,7 +20,7 @@
 #include <unistd.h>
 
 int main() {
-    auto leds = Vibrator::create();
+    auto leds = hfd::Vibrator::create();
 
     leds->vibrate();
 

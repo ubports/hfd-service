@@ -31,7 +31,7 @@
 class DbusAdaptorService : public DbusAdaptor {
     Q_OBJECT
 public:
-    DbusAdaptorService(std::shared_ptr<Vibrator> vibrator, std::shared_ptr<Leds> leds) 
+    DbusAdaptorService(std::shared_ptr<hfd::Vibrator> vibrator, std::shared_ptr<hfd::Leds> leds)
         : DbusAdaptor()
         , m_vibrator(vibrator)
         , m_leds(leds)
@@ -42,14 +42,14 @@ public Q_SLOTS:
     void vibrate(int durationMs) override {m_vibrator->vibrate(durationMs); };
     void rumble(int durationMs, int repeat) override { m_vibrator->rumble(durationMs, repeat); };
 
-    void setState(int state) override { m_leds->setState(utils::toLedsState(state)); };
+    void setState(int state) override { m_leds->setState(hfd::utils::toState(state)); };
     void setColor(unsigned int color) override { m_leds->setColor(color); }
     void setOnMs(int ms) override { m_leds->setOnMs(ms); };
     void setOffMs(int ms) override { m_leds->setOffMs(ms); };
 
 private:
-    std::shared_ptr<Vibrator> m_vibrator;
-    std::shared_ptr<Leds> m_leds;
+    std::shared_ptr<hfd::Vibrator> m_vibrator;
+    std::shared_ptr<hfd::Leds> m_leds;
 };
 
 #include "service.moc"
@@ -63,18 +63,18 @@ int main(int argc, char *argv[]) {
     const char* leds_impl_env = getenv("HFD_LEDS_IMPL");
 
     std::cout << "Starting vibrator impl" << std::endl;
-    std::shared_ptr<Vibrator> vibrator;
+    std::shared_ptr<hfd::Vibrator> vibrator;
     if (vibrator_impl_env)
-        vibrator = Vibrator::create(vibrator_impl_env);
+        vibrator = hfd::Vibrator::create(vibrator_impl_env);
     else
-        vibrator = Vibrator::create();
+        vibrator = hfd::Vibrator::create();
 
     std::cout << "Starting leds impl" << std::endl;
-    std::shared_ptr<Leds> leds;
+    std::shared_ptr<hfd::Leds> leds;
     if (leds_impl_env)
-        leds = Leds::create(leds_impl_env);
+        leds = hfd::Leds::create(leds_impl_env);
     else
-        leds = Leds::create();
+        leds = hfd::Leds::create();
 
     std::cout << "done" << std::endl;
     auto dbusAdaptor = new DbusAdaptorService(vibrator, leds);
