@@ -10,15 +10,25 @@ add_library(hfd-core STATIC
     leds.cpp
     leds-sysfs.cpp
     leds-hybris.cpp
+    leds-hidl.cpp
 
     vibrator.cpp
     vibrator-sysfs.cpp
     vibrator-legacy.cpp
+    vibrator-hidl.cpp
+
+    bridge/bridge_defs.h
+    bridge/bridge.h
+    bridge/hybris_bridge_defs.h
+
+    hardware/hfd_api.cpp
+    hardware/android_hw_module.h
 )
 
 target_link_libraries(hfd-core
     udev-cpp
     ${ANDROID_HARDWARE_LIBRARIES}
+    ${Hybris}
 )
 
 set(SERVICE_SRC

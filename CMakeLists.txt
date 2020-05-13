@@ -14,7 +14,22 @@ pkg_check_modules(ANDROID_HARDWARE REQUIRED libhardware)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5DBus REQUIRED)
 
+# Try to find hybris, and disable hybris from build if not found
+find_library(Hybris
+    NAMES hybris-common
+)
+
+if(NOT Hybris)
+    message(STATUS "Notice: libhybris-common.so not found, disabling hybris support")
+    set(ENABLE_HYBRIS_IMPLEMENTATION OFF)
+endif()
+
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+
+include_directories(
+    include
+    src
+)
 
 add_subdirectory(src)
 add_subdirectory(tools)
