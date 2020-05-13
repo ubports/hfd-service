@@ -18,6 +18,10 @@ if (ENABLE_LIBHYBRIS)
   if(ANDROID_HEADERS_FOUND AND ANDROID_HARDWARE_FOUND)
     message(STATUS "Bulding with libhybris support")
     set(HAVE_LIBHYBRIS true)
+    # Try to find hybris, and disable hybris from build if not found
+    find_library(HYBRIS_COMMON_LIBRARY
+      NAMES hybris-common
+    )
   else()
     message(WARNING "Bulding without libhybris support, missing required dependencies!")
   endif()
@@ -29,6 +33,11 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5DBus REQUIRED)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+
+include_directories(
+    include
+    src
+)
 
 add_subdirectory(src)
 add_subdirectory(tools)

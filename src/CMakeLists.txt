@@ -7,10 +7,20 @@ if (HAVE_LIBHYBRIS)
 
     set(LIBHYBRIS_SRC
         leds-hybris.cpp
+        leds-hidl.cpp
+        vibrator-hidl.cpp
+
+        bridge/bridge_defs.h
+        bridge/bridge.h
+        bridge/hybris_bridge_defs.h
+
+        hardware/hfd_api.cpp
+        hardware/android_hw_module.h
     )
 
     set(LIBHYBRIS_LIBRARIES
         ${ANDROID_HARDWARE_LIBRARIES}
+        ${HYBRIS_COMMON_LIBRARY}
     )
 
     add_definitions(-DHAVE_LIBHYBRIS)

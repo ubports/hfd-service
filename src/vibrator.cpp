@@ -19,6 +19,9 @@
 #include "vibrator.h"
 #include "vibrator-sysfs.h"
 #include "vibrator-legacy.h"
+#ifdef HAVE_LIBHYBRIS
+#include "vibrator-hidl.h"
+#endif
 #include "repeatThread.h"
 
 #include <iostream>
@@ -40,6 +43,13 @@ protected:
 
 std::shared_ptr<Vibrator> Vibrator::create()
 {
+#ifdef HAVE_LIBHYBRIS
+    if (VibratorHIDL::usable()) {
+        std::cout << "Using hidl vibrator" << std::endl;
+        return std::make_shared<VibratorHIDL>();
+    }
+    else
+#endif
     if (VibratorSysfs::usable()) {
         std::cout << "Using sysfs vibrator" << std::endl;
         return std::make_shared<VibratorSysfs>();
@@ -55,9 +65,15 @@ std::shared_ptr<Vibrator> Vibrator::create()
 
 std::shared_ptr<Vibrator> Vibrator::create(std::string type)
 {
+#ifdef HAVE_LIBHYBRIS
+    if (type == "hidl") {
+        std::cout << "Using hidl vibrator" << std::endl;
+        return std::make_shared<VibratorHIDL>();
+    } else
+#endif
     if (type == "sysfs") {
         std::cout << "Using sysfs vibrator" << std::endl;
-        return std::make_shared<VibratorSysfs>();  
+        return std::make_shared<VibratorSysfs>();
     } else if (type == "legacy") {
         std::cout << "Using legacy vibrator" << std::endl;
         return std::make_shared<VibratorLegacy>();

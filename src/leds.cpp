@@ -21,6 +21,7 @@
 
 #ifdef HAVE_LIBHYBRIS
 #include "leds-hybris.h"
+#include "leds-hidl.h"
 #endif
 
 #include <iostream>
@@ -42,7 +43,11 @@ protected:
 std::shared_ptr<Leds> Leds::create()
 {
 #ifdef HAVE_LIBHYBRIS
-    if (LedsHybris::usable()) {
+    if (LedsHIDL::usable()) {
+        std::cout << "Using hidl leds" << std::endl;
+        return std::make_shared<LedsHIDL>();
+    }
+    else if (LedsHybris::usable()) {
         std::cout << "Using hybris leds" << std::endl;
         return std::make_shared<LedsHybris>();
     }
@@ -64,6 +69,10 @@ std::shared_ptr<Leds> Leds::create(std::string type)
         return std::make_shared<LedsSysfs>();
     }
 #ifdef HAVE_LIBHYBRIS
+    else if (type == "hidl") {
+        std::cout << "Using hidl leds" << std::endl;
+        return std::make_shared<LedsHIDL>();
+    }
     else if (type == "hybris") {
         std::cout << "Using hybris leds" << std::endl;
         return std::make_shared<LedsHybris>();
