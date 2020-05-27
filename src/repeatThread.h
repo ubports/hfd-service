@@ -19,8 +19,9 @@
 #pragma once
 
 #include <thread>
+#include <mutex>
+#include <condition_variable>
 #include <functional>
-#include <unistd.h>
 #include <iostream>
 
 namespace hfd {
@@ -30,7 +31,7 @@ public:
     RepeatThread(std::function<void(void)> func, int sleep, int times)
         : m_func(func)
         , m_times(times)
-        , m_sleep(sleep)
+        , m_sleepMs(sleep)
         , m_thread(&RepeatThread::runner, this)
     {};
 
@@ -39,30 +40,38 @@ public:
     };
 
     inline void abort() {
-        m_break = true;
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            m_break = true;
+            m_cv.notify_all();
+        }
         m_thread.join();
     };
 private:
     inline void runner() {
         for (auto i = 0; i <= m_times; i++) {
-            sleep();
-            if (m_break)
-                break;
+            {
+                std::unique_lock<std::mutex> lock(m_mutex);
+                auto timeout = std::chrono::steady_clock::now() + m_sleepMs;
+
+                bool is_stopped = m_cv.wait_until(lock, timeout,
+                                    [&]() { return m_break; });
+                if (is_stopped)
+                    break;
+            }
+
+            // Call m_func() without the lock; we don't support canceling
+            // in the middle.
             m_func();
         }
     };
 
-    inline void sleep() {
-        for (auto i = 0; i <= m_sleep; i++) {
-            if (m_break)
-                break;
-            usleep(1*1000);
-        }
-    };
-
+    std::mutex m_mutex;
+    std::condition_variable m_cv;
     bool m_break = false;
+
     int m_times;
-    int m_sleep;
+    std::chrono::milliseconds m_sleepMs;
     std::function<void(void)> m_func;
     std::thread m_thread;
 };
