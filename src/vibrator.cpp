@@ -86,7 +86,7 @@ void Vibrator::vibrate(int durationMs)
 
 void Vibrator::rumble(int durationMs, int repeat)
 {
-    m_repeatThread = std::make_shared<RepeatThread>([&](){
+    m_repeatThread = std::make_shared<RepeatThread>([=](){
         vibrate(durationMs);
     }, durationMs*2, repeat);
 }
