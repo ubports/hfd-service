@@ -21,7 +21,26 @@
 #include "utils.h"
 
 #include <iostream>
+#include <regex>
 #include <unistd.h>
+
+static bool has_timer_trigger(Udev::UdevDevice const& dev) {
+    std::string trigger_value;
+
+    try {
+        // get_sysattr() always gives the full list of available values.
+        trigger_value = dev.get_sysattr("trigger");
+    } catch (std::runtime_error const&) {
+        return false;
+    }
+
+    /*
+     * Word "timer" maybe at the start or the end, in the middle surrounded by
+     * spaces, or surrounded by '[' and ']'.
+     */
+    static std::regex timer_re("(^|[[ ])timer([] ]|$)", std::regex_constants::extended);
+    return std::regex_search(trigger_value, timer_re);
+}
 
 namespace hfd {
 bool LedsSysfs::usable() {
@@ -39,11 +58,11 @@ bool LedsSysfs::usable() {
         for (auto color : splitted) {
             std::cout << "got: " << color << std::endl;
             if (color == "red")
-                red = true;
+                red = has_timer_trigger(dev);
             if (color == "green")
-                green = true;
+                green = has_timer_trigger(dev);
             if (color == "blue")
-                blue = true;
+                blue = has_timer_trigger(dev);
         }
     }
 
