@@ -35,10 +35,6 @@ bool LedsHybris::usable() {
 }
 
 LedsHybris::LedsHybris() : Leds() {
-     if (m_lightDevice) {
-        return;
-    }
-
     int err;
     hw_module_t* module;
 
