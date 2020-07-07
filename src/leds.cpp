@@ -38,13 +38,13 @@ protected:
 
 std::shared_ptr<Leds> Leds::create()
 {
-    if (LedsSysfs::usable()) {
-        std::cout << "Using sysfs leds" << std::endl;
-        return std::make_shared<LedsSysfs>();
-    }
-    else if (LedsHybris::usable()) {
+    if (LedsHybris::usable()) {
         std::cout << "Using hybris leds" << std::endl;
         return std::make_shared<LedsHybris>();
+    }
+    else if (LedsSysfs::usable()) {
+        std::cout << "Using sysfs leds" << std::endl;
+        return std::make_shared<LedsSysfs>();
     }
 
     std::cout << "Using dummy leds" << std::endl;
