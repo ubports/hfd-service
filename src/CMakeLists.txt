@@ -1,24 +1,35 @@
 add_subdirectory(udev)
 
-include_directories(
-    ${ANDROID_HEADERS_INCLUDE_DIRS}
-)
+if (HAVE_LIBHYBRIS)
+    include_directories(
+        ${ANDROID_HEADERS_INCLUDE_DIRS}
+    )
 
+    set(LIBHYBRIS_SRC
+        leds-hybris.cpp
+    )
 
+    set(LIBHYBRIS_LIBRARIES
+        ${ANDROID_HARDWARE_LIBRARIES}
+    )
+
+    add_definitions(-DHAVE_LIBHYBRIS)
+endif()
 
 add_library(hfd-core STATIC
     leds.cpp
     leds-sysfs.cpp
-    leds-hybris.cpp
 
     vibrator.cpp
     vibrator-sysfs.cpp
     vibrator-legacy.cpp
+
+    ${LIBHYBRIS_SRC}
 )
 
 target_link_libraries(hfd-core
     udev-cpp
-    ${ANDROID_HARDWARE_LIBRARIES}
+    ${LIBHYBRIS_LIBRARIES}
 )
 
 set(SERVICE_SRC
@@ -29,8 +40,6 @@ set(SERVICE_SRC
 qt5_add_dbus_adaptor(SERVICE_SRC
     ${CMAKE_SOURCE_DIR}/data/com.lomiri.hfd.xml ${CMAKE_CURRENT_SOURCE_DIR}/dbusAdaptor.h DbusAdaptor
 )
-
-message("ff ${SERVICE_SRC}")
 
 add_executable(hfd-service
     ${SERVICE_SRC} 
