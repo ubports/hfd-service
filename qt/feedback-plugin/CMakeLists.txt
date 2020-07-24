@@ -28,8 +28,6 @@ set(PLUGIN_INSTALL_LOCATION "${CMAKE_INSTALL_LIBDIR}/qt5/plugins/feedback")
 
 message(STATUS "Installing Qt5 feedback plugin to: ${PLUGIN_INSTALL_LOCATION}")
 
-qt5_use_modules(qtfeedback_hfd Core DBus Feedback)
-
 target_link_libraries(
   qtfeedback_hfd
 
