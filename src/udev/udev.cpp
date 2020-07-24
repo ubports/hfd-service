@@ -1,6 +1,8 @@
-#include <libudev.h>
 #include <assert.h>
 #include <string>
+#include <stdexcept>
+
+#include <libudev.h>
 
 #include "udev-cpp.h"
 
