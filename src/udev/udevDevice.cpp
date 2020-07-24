@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <stdexcept>
+
 #include <libudev.h>
 
 #include "udev-cpp.h"
