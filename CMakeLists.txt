@@ -9,8 +9,22 @@ include(FindPkgConfig)
 include(GNUInstallDirs)
 
 pkg_check_modules(UDEV REQUIRED libudev)
-pkg_check_modules(ANDROID_HEADERS REQUIRED android-headers)
-pkg_check_modules(ANDROID_HARDWARE REQUIRED libhardware)
+
+option(ENABLE_LIBHYBRIS "Enable libhybris support" ON)
+
+if (ENABLE_LIBHYBRIS)
+  pkg_check_modules(ANDROID_HEADERS android-headers)
+  pkg_check_modules(ANDROID_HARDWARE libhardware)
+  if(ANDROID_HEADERS_FOUND AND ANDROID_HARDWARE_FOUND)
+    message(STATUS "Bulding with libhybris support")
+    set(HAVE_LIBHYBRIS true)
+  else()
+    message(WARNING "Bulding without libhybris support, missing required dependencies!")
+  endif()
+else()
+  message(STATUS "Bulding without libhybris support")
+endif()
+
 find_package(Qt5Core REQUIRED)
 find_package(Qt5DBus REQUIRED)
 
