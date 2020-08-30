@@ -58,10 +58,23 @@ private:
 int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
 
+    // Environment variables to switch between implementations
+    const char* vibrator_impl_env = getenv("HFD_VIBRATOR_IMPL");
+    const char* leds_impl_env = getenv("HFD_LEDS_IMPL");
+
     std::cout << "Starting vibrator impl" << std::endl;
-    auto vibrator = hfd::Vibrator::create();
+    std::shared_ptr<hfd::Vibrator> vibrator;
+    if (vibrator_impl_env)
+        vibrator = hfd::Vibrator::create(vibrator_impl_env);
+    else
+        vibrator = hfd::Vibrator::create();
+
     std::cout << "Starting leds impl" << std::endl;
-    auto leds = hfd::Leds::create();
+    std::shared_ptr<hfd::Leds> leds;
+    if (leds_impl_env)
+        leds = hfd::Leds::create(leds_impl_env);
+    else
+        leds = hfd::Leds::create();
 
     std::cout << "done" << std::endl;
     auto dbusAdaptor = new DbusAdaptorService(vibrator, leds);
