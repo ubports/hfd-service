@@ -34,7 +34,12 @@ VibratorSysfs::VibratorSysfs(): Vibrator() {
 
     m_device = udev.device_from_syspath("/sys/class/leds/vibrator");
 
-    m_device.set_sysattr("trigger", "transient");
+    try {
+        m_device.set_sysattr("trigger", "transient");
+    } catch (const std::runtime_error& e) {
+        (void)e;
+        std::cerr << "Failed to add transient trigger, usually non-fatal" << std::endl;
+    }
 
     // Make sure we are off on init
     configure(State::Off, 0);
