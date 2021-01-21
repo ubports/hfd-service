@@ -18,6 +18,8 @@
 
 #include "vibrator-sysfs.h"
 
+#include <fstream>
+#include <string>
 #include <iostream>
 #include <unistd.h>
 
@@ -25,8 +27,47 @@
 // we set 
 namespace hfd {
 
+// True if and only if the standard transient trigger is supported.
+// Some devices implement the transient trigger but don't bother
+// Actually support it, this function will return a false negative
+// in that case
+bool VibratorSysfs::supportTransient() {
+    std::ifstream source_stream("/sys/class/leds/vibrator/trigger");
+
+    if (!source_stream) {
+        std::cerr << "Can't read '/sys/class/leds/vibrator/trigger', does the file exist?" << std::endl;
+        return false;
+    }
+
+    std::string supported_triggers = std::string(std::istreambuf_iterator<char>(source_stream),
+                                std::istreambuf_iterator<char>());
+    
+    bool transientSupported = supported_triggers.find("transient") != std::string::npos;
+    std::cout << "Vibrator supports transient trigger: " << transientSupported << std::endl;
+
+    return transientSupported;
+}
+
+// Checks that the transient trigger is supported,
+// or implemented manually by the driver
 bool VibratorSysfs::usable() {
-    return access("/sys/class/leds/vibrator", F_OK ) != -1;
+    // Need to be able to access the vibrator
+    bool usable = (access("/sys/class/leds/vibrator", F_OK ) != -1);
+    if (!usable) {
+        return false;
+    }
+
+    // Check if transient is in the list of supported triggers
+    usable = (supportTransient());
+
+    // Check if the device supports the transient trigger implicitly.
+    usable |= (access("/sys/class/leds/vibrator/duration", F_OK ) != -1
+            && access("/sys/class/leds/vibrator/state", F_OK ) != -1
+            && access("/sys/class/leds/vibrator/activate", F_OK ) != -1);
+
+    std::cout << "Usable: " << usable << std::endl;
+
+    return usable;
 }
 
 VibratorSysfs::VibratorSysfs(): Vibrator() {
@@ -34,11 +75,11 @@ VibratorSysfs::VibratorSysfs(): Vibrator() {
 
     m_device = udev.device_from_syspath("/sys/class/leds/vibrator");
 
-    try {
+    // If we reached this point but supportTransient() returns false
+    // then the device implements the transient trigger implicitly
+    // so we don't need to enable the transient trigger
+    if (supportTransient()) {
         m_device.set_sysattr("trigger", "transient");
-    } catch (const std::runtime_error& e) {
-        (void)e;
-        std::cerr << "Failed to add transient trigger, usually non-fatal" << std::endl;
     }
 
     // Make sure we are off on init

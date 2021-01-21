@@ -34,5 +34,6 @@ protected:
     
 private:
     Udev::UdevDevice m_device;
+    static bool supportTransient();
 };
 }
