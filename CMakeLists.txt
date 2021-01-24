@@ -34,12 +34,27 @@ add_subdirectory(src)
 add_subdirectory(tools)
 add_subdirectory(qt)
 
-# Dbus file
-install(FILES data/hfd-service.conf 
+FILE(GLOB upstart_file "${CMAKE_CURRENT_SOURCE_DIR}/data/hfd-service.conf")
+FILE(GLOB systemd_file "${CMAKE_CURRENT_SOURCE_DIR}/data/hfd-service.service")
+FILE(GLOB dbus_file "${CMAKE_CURRENT_SOURCE_DIR}/data/com.lomiri.hfd.conf")
+
+# Upstart file
+install(FILES ${upstart_file}
     DESTINATION /etc/init
 )
 
+# Systemd file
+pkg_check_modules(SYSTEMD systemd)
+if (${SYSTEMD_FOUND})
+  pkg_get_variable(SYSTEMD_SYSTEM_DIR systemd systemdsystemunitdir)
+  message (STATUS "${SYSTEMD_SYSTEM_DIR} is the systemd system unit file install dir, installing ${systemd_file} to it")
+  install (FILES "${systemd_file}"
+           DESTINATION "${SYSTEMD_SYSTEM_DIR}")
+else()
+   message(WARNING "Did not find systmed, not installing systemd service")
+endif()
+
 # Dbus policy
-install(FILES data/com.lomiri.hfd.conf
+install(FILES ${dbus_file}
   DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/dbus-1/system.d
 )

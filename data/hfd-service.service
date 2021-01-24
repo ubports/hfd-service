@@ -1,0 +1,12 @@
+[Unit]
+Description=hfd service for feedback support
+Wants=dbus.service
+After=dbus.service
+
+[Service]
+Type=dbus
+BusName=com.lomiri.hfd
+ExecStart=/usr/bin/hfd-service
+
+[Install]
+WantedBy=multi-user.target
