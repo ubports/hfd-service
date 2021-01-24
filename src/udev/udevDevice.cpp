@@ -138,7 +138,7 @@ namespace Udev
 	}
 
 	void UdevDevice::set_sysattr(const std::string named, const std::string value) const
-{
+	{
 		int ret = udev_device_set_sysattr_value(handle, named.c_str(), (char*)value.c_str());
 		if (ret < 0)
 		{
