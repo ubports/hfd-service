@@ -17,6 +17,7 @@
  */
 
 #include "vibrator.h"
+#include "vibrator-ff.h"
 #include "vibrator-sysfs.h"
 #include "vibrator-legacy.h"
 #include "repeatThread.h"
@@ -48,6 +49,10 @@ std::shared_ptr<Vibrator> Vibrator::create()
         std::cout << "Using legacy vibrator" << std::endl;
         return std::make_shared<VibratorLegacy>();
     }
+    else if (VibratorFF::usable()) {
+        std::cout << "Using force feedback vibrator" << std::endl;
+        return std::make_shared<VibratorFF>();
+    }
 
     std::cout << "Using dummy vibrator" << std::endl;
     return std::make_shared<VibratorDummy>();
@@ -55,7 +60,10 @@ std::shared_ptr<Vibrator> Vibrator::create()
 
 std::shared_ptr<Vibrator> Vibrator::create(std::string type)
 {
-    if (type == "sysfs") {
+    if (type == "ff") {
+        std::cout << "Using force feedback vibrator" << std::endl;
+        return std::make_shared<VibratorFF>();  
+    } else if (type == "sysfs") {
         std::cout << "Using sysfs vibrator" << std::endl;
         return std::make_shared<VibratorSysfs>();  
     } else if (type == "legacy") {
