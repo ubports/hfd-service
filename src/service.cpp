@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
     connection.registerService("com.lomiri.hfd");
 
     if (connection.lastError().isValid()) {
-        std::cout << "Ist not connedted to dbus!!!!" << std::endl;
+        std::cout << "Not connected to DBus!!!" << std::endl;
         qWarning() << connection.lastError();
         return 1;
     }
