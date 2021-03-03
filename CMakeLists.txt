@@ -36,10 +36,10 @@ add_subdirectory(qt)
 
 # Dbus file
 install(FILES data/hfd-service.conf 
-    DESTINATION /etc/init
+  DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/init
 )
 
 # Dbus policy
 install(FILES data/com.lomiri.hfd.conf
-  DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/dbus-1/system.d
+  DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/dbus-1/system.d
 )
