@@ -21,6 +21,7 @@ add_library(hfd-core STATIC
     leds-sysfs.cpp
 
     vibrator.cpp
+    vibrator-ff.cpp
     vibrator-sysfs.cpp
     vibrator-legacy.cpp
 
