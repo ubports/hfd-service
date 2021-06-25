@@ -17,6 +17,7 @@
  */
 
 #include "vibrator-ff.h"
+#include "utils.h"
 
 #include <fstream>
 #include <string>
@@ -26,6 +27,7 @@
 #include <linux/input.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
+#include <errno.h>
 
 /*
  * This vibrator supports devices using the Kernel Force Feedback API.
@@ -42,24 +44,21 @@ bool VibratorFF::usable() {
 // This takes a path to a device like '/dev/input/eventX'
 // And queries the device to see if it supports FF_RUMBLE
 bool inputDeviceSupportsFF(std::string devname) {
-	int ret;
-	unsigned char features[1 + FF_MAX/8/sizeof(unsigned char)];
+	unsigned char features[1 + FF_MAX/8/sizeof(unsigned char)] = {0};
 	int tempFd = open(devname.c_str(), O_RDWR|O_CLOEXEC);
+	hfd::utils::FileDescGuard tempFdGuard(tempFd);
 	int request = EVIOCGBIT(EV_FF, sizeof(features)*sizeof(unsigned char));
-	bool supported = false;
 
-	ret = ioctl(tempFd, request, &features);
+	if (ioctl(tempFd, request, &features) < 0) {
+		std::cerr << __FUNCTION__ << ": ioctl() failed with errno = " << errno << std::endl;
+		return false;
+	}
 
 	if (testBit(FF_RUMBLE, features)) {
-		supported =  true;
-	} else {
+		return true;
 	}
 
-	ret = close(tempFd);
-	if (ret != 0) {
-		std::cerr << "FF: Failed to close " << tempFd << ": " << ret << std::endl;
-	}
-	return supported;
+	return false;
 }
 
 // Create play and/or stop input events to control
