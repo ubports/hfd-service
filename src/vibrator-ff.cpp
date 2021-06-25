@@ -44,7 +44,7 @@ bool VibratorFF::usable() {
 bool inputDeviceSupportsFF(std::string devname) {
 	int ret;
 	unsigned char features[1 + FF_MAX/8/sizeof(unsigned char)];
-	int tempFd = open(devname.c_str(), O_RDWR);
+	int tempFd = open(devname.c_str(), O_RDWR|O_CLOEXEC);
 	int request = EVIOCGBIT(EV_FF, sizeof(features)*sizeof(unsigned char));
 	bool supported = false;
 
@@ -125,7 +125,7 @@ VibratorFF::VibratorFF(): Vibrator() {
 	effect.u.rumble.strong_magnitude = 0x6000; // This should be adjustable
 	effect.u.rumble.weak_magnitude = 0;
 
-	fd = open(devname.c_str(), O_RDWR);
+	fd = open(devname.c_str(), O_RDWR|O_CLOEXEC);
 	if (fd < 0) {
 		std::cerr << "Can't open force feedback device path: " << devname << std::endl;
 		return;
