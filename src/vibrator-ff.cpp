@@ -64,7 +64,6 @@ bool inputDeviceSupportsFF(std::string devname) {
 // Create play and/or stop input events to control
 // the rumble effect we uploaded in the constructor.
 void VibratorFF::configure(State state, int durationMs) {
-	int ret;
 	struct input_event play;
 	struct input_event stop;
 
@@ -74,14 +73,19 @@ void VibratorFF::configure(State state, int durationMs) {
 		play.type = EV_FF;
 		play.code = effect.id;
 		play.value = 1;
-		write(fd, (const void*) &play, sizeof(play));
+		if (write(fd, (const void*) &play, sizeof(play)) != sizeof(play)) {
+			std::cerr << "failed to fully write play command to input device fd: errno = " << errno << std::endl;
+			return;
+		}
 
 		usleep(durationMs * 1000);
 	}
 	stop.type = EV_FF;
 	stop.code = effect.id;
 	stop.value = 0;
-	write(fd, (const void*) &stop, sizeof(stop));
+	if (write(fd, (const void*) &stop, sizeof(stop)) != sizeof(stop)) {
+		std::cerr << "failed to fully write stop command to input device fd: errno = " << errno << std::endl;
+	}
 }
 
 // This finds the first device that supports force feedback
@@ -95,7 +99,7 @@ std::string VibratorFF::getFirstFFDevice() {
 	enumerate.scan_devices();
 	std::vector<Udev::UdevDevice> devices = enumerate.enumerate_devices();
 	std::cout << "FF: Found " << devices.size() << " input devices" << std::endl;
-	for(int i = 0; i < devices.size(); i++) {
+	for(size_t i = 0; i < devices.size(); i++) {
 		const auto properties = devices.at(i).get_properties();
 		if (properties.find("DEVNAME") != properties.end()) {
 			std::string temp = devices.at(i).get_properties().at("DEVNAME");

@@ -29,9 +29,9 @@ class RepeatThread {
     
 public:
     RepeatThread(std::function<void(void)> func, int sleep, int times)
-        : m_func(func)
-        , m_times(times)
+        : m_times(times)
         , m_sleepMs(sleep)
+        , m_func(func)
         , m_thread(&RepeatThread::runner, this)
     {};
 

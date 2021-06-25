@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <libudev.h>
+
 #include <map>
 #include <string>
 #include <vector>
