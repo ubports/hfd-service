@@ -23,12 +23,14 @@
 
 #include "hfdadaptor.h"
 
+#include <climits>
 #include <memory>
 #include <iostream>
 
 #include <QCoreApplication>
+#include <QDBusError>
 
-class DbusAdaptorService : public DbusAdaptor {
+class DbusAdaptorService : public DbusAdaptor, protected QDBusContext {
     Q_OBJECT
 public:
     DbusAdaptorService(std::shared_ptr<hfd::Vibrator> vibrator, std::shared_ptr<hfd::Leds> leds)
@@ -39,13 +41,41 @@ public:
 
 public Q_SLOTS:
     void vibrate() override { m_vibrator->vibrate(); };
-    void vibrate(int durationMs) override {m_vibrator->vibrate(durationMs); };
-    void rumble(int durationMs, int repeat) override { m_vibrator->rumble(durationMs, repeat); };
+    void vibrate(int durationMs) override {
+        if (!verifyDBusInt("durationMs", durationMs, 1, 1000 * 60))
+            return;
+        m_vibrator->vibrate(durationMs);
+    };
+    void rumble(int durationMs, int repeat) override {
+        if (!verifyDBusInt("durationMs", durationMs, 1, 1000))
+            return;
+        if (!verifyDBusInt("repeat", repeat, 1, 60))
+            return;
+        m_vibrator->rumble(durationMs, repeat);
+    };
 
     void setState(int state) override { m_leds->setState(hfd::utils::toState(state)); };
     void setColor(unsigned int color) override { m_leds->setColor(color); }
-    void setOnMs(int ms) override { m_leds->setOnMs(ms); };
-    void setOffMs(int ms) override { m_leds->setOffMs(ms); };
+    void setOnMs(int ms) override {
+        if (!verifyDBusInt("ms", ms))
+            return;
+        m_leds->setOnMs(ms);
+    };
+    void setOffMs(int ms) override {
+        if (!verifyDBusInt("ms", ms))
+            return;
+        m_leds->setOffMs(ms);
+    };
+
+protected:
+
+    bool verifyDBusInt(const std::string &name, int val, int min = 1, int max = INT_MAX) {
+        if (val >= min && val <= max)
+            return true;
+
+        this->sendErrorReply(QDBusError::InvalidArgs, QString::fromStdString(std::string(name) + ": parameter out of range"));
+        return false;
+    }
 
 private:
     std::shared_ptr<hfd::Vibrator> m_vibrator;

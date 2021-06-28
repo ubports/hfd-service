@@ -39,9 +39,6 @@ VibratorLegacy::VibratorLegacy(): Vibrator() {
 
 VibratorLegacy::~VibratorLegacy()
 {
-    if (m_thread) {
-        m_thread->join();
-    }
 }
 
 // Over simplyfied led controlls!

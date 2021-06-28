@@ -17,6 +17,7 @@
  */
 
 #include "vibrator-ff.h"
+#include "utils.h"
 
 #include <fstream>
 #include <string>
@@ -26,6 +27,7 @@
 #include <linux/input.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
+#include <errno.h>
 
 /*
  * This vibrator supports devices using the Kernel Force Feedback API.
@@ -42,32 +44,31 @@ bool VibratorFF::usable() {
 // This takes a path to a device like '/dev/input/eventX'
 // And queries the device to see if it supports FF_RUMBLE
 bool inputDeviceSupportsFF(std::string devname) {
-	int ret;
-	unsigned char features[1 + FF_MAX/8/sizeof(unsigned char)];
-	int tempFd = open(devname.c_str(), O_RDWR);
+	unsigned char features[1 + FF_MAX/8/sizeof(unsigned char)] = {0};
+	int tempFd = open(devname.c_str(), O_RDWR|O_CLOEXEC);
+	hfd::utils::FileDescGuard tempFdGuard(tempFd);
 	int request = EVIOCGBIT(EV_FF, sizeof(features)*sizeof(unsigned char));
-	bool supported = false;
 
-	ret = ioctl(tempFd, request, &features);
+	if (ioctl(tempFd, request, &features) < 0) {
+		std::cerr << __FUNCTION__ << ": ioctl() failed with errno = " << errno << std::endl;
+		return false;
+	}
 
 	if (testBit(FF_RUMBLE, features)) {
-		supported =  true;
-	} else {
+		return true;
 	}
 
-	ret = close(tempFd);
-	if (ret != 0) {
-		std::cerr << "FF: Failed to close " << tempFd << ": " << ret << std::endl;
-	}
-	return supported;
+	return false;
 }
 
 // Create play and/or stop input events to control
 // the rumble effect we uploaded in the constructor.
 void VibratorFF::configure(State state, int durationMs) {
-	int ret;
 	struct input_event play;
 	struct input_event stop;
+
+	if (!isOpen())
+		return;
 
 	if (state == State::On) {
 		std::cout << "rumbling with magnitude: " << effect.u.rumble.strong_magnitude << " for " << durationMs << "ms" << std::endl;
@@ -75,14 +76,19 @@ void VibratorFF::configure(State state, int durationMs) {
 		play.type = EV_FF;
 		play.code = effect.id;
 		play.value = 1;
-		write(fd, (const void*) &play, sizeof(play));
+		if (write(fd, (const void*) &play, sizeof(play)) != sizeof(play)) {
+			std::cerr << "failed to fully write play command to input device fd: errno = " << errno << std::endl;
+			return;
+		}
 
 		usleep(durationMs * 1000);
 	}
 	stop.type = EV_FF;
 	stop.code = effect.id;
 	stop.value = 0;
-	write(fd, (const void*) &stop, sizeof(stop));
+	if (write(fd, (const void*) &stop, sizeof(stop)) != sizeof(stop)) {
+		std::cerr << "failed to fully write stop command to input device fd: errno = " << errno << std::endl;
+	}
 }
 
 // This finds the first device that supports force feedback
@@ -96,7 +102,7 @@ std::string VibratorFF::getFirstFFDevice() {
 	enumerate.scan_devices();
 	std::vector<Udev::UdevDevice> devices = enumerate.enumerate_devices();
 	std::cout << "FF: Found " << devices.size() << " input devices" << std::endl;
-	for(int i = 0; i < devices.size(); i++) {
+	for(size_t i = 0; i < devices.size(); i++) {
 		const auto properties = devices.at(i).get_properties();
 		if (properties.find("DEVNAME") != properties.end()) {
 			std::string temp = devices.at(i).get_properties().at("DEVNAME");
@@ -125,7 +131,7 @@ VibratorFF::VibratorFF(): Vibrator() {
 	effect.u.rumble.strong_magnitude = 0x6000; // This should be adjustable
 	effect.u.rumble.weak_magnitude = 0;
 
-	fd = open(devname.c_str(), O_RDWR);
+	fd = open(devname.c_str(), O_RDWR|O_CLOEXEC);
 	if (fd < 0) {
 		std::cerr << "Can't open force feedback device path: " << devname << std::endl;
 		return;
@@ -142,7 +148,7 @@ VibratorFF::VibratorFF(): Vibrator() {
 
 VibratorFF::~VibratorFF() {
 	int ret;
-	if (fd > 0) {
+	if (isOpen()) {
 		// Unload the effect
 		ret = ioctl(fd, EVIOCRMFF, effect.id);
 		if (ret < 0)

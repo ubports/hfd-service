@@ -2,8 +2,6 @@
 #include <string>
 #include <stdexcept>
 
-#include <libudev.h>
-
 #include "udev-cpp.h"
 
 namespace Udev

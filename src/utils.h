@@ -20,6 +20,10 @@
 
 #include "leds.h"
 
+#include <errno.h>
+#include <unistd.h>
+
+#include <iostream>
 #include <sstream>
 #include <vector>
 
@@ -41,5 +45,20 @@ namespace utils {
             return State::On;
         return State::Off;
     }
+
+    class FileDescGuard
+    {
+    public:
+        FileDescGuard(int fd) : m_fd(fd) {}
+
+        ~FileDescGuard() {
+            if (close(m_fd) != 0)
+            {
+                std::cerr << "Failed to close file descriptor " << m_fd << ": errno = " << errno << std::endl;
+            }
+        }
+    private:
+        int m_fd = -1;
+    };
 }
 }
