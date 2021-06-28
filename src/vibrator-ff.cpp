@@ -67,6 +67,9 @@ void VibratorFF::configure(State state, int durationMs) {
 	struct input_event play;
 	struct input_event stop;
 
+	if (!isOpen())
+		return;
+
 	if (state == State::On) {
 		std::cout << "rumbling with magnitude: " << effect.u.rumble.strong_magnitude << " for " << durationMs << "ms" << std::endl;
 
@@ -145,7 +148,7 @@ VibratorFF::VibratorFF(): Vibrator() {
 
 VibratorFF::~VibratorFF() {
 	int ret;
-	if (fd > 0) {
+	if (isOpen()) {
 		// Unload the effect
 		ret = ioctl(fd, EVIOCRMFF, effect.id);
 		if (ret < 0)

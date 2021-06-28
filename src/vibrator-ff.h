@@ -42,6 +42,8 @@ public:
     VibratorFF();
     ~VibratorFF();
 
+    bool isOpen() const { return fd >= 0; }
+
     static bool usable();
     static std::string getFirstFFDevice();
 protected:
