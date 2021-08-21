@@ -87,12 +87,17 @@ void Vibrator::vibrate()
     vibrate(m_defaultDurationMs);
 }
 
-void Vibrator::vibrate(int durationMs)
+void Vibrator::vibrate(unsigned int durationMs)
 {
     configure(State::On, durationMs);
 }
 
-void Vibrator::rumble(int durationMs, int repeat)
+void Vibrator::vibratePattern(unsigned int durationMs[], unsigned int repeat)
+{
+    std::cout << "vibratePattern() called";
+}
+
+void Vibrator::rumble(unsigned int durationMs, unsigned int repeat)
 {
     m_repeatThread = std::make_shared<RepeatThread>([=](){
         vibrate(durationMs);

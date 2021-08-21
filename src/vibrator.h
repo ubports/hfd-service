@@ -28,8 +28,9 @@ public:
     Vibrator();
 
     void vibrate();
-    void vibrate(int durationMs);
-    void rumble(int durationMs, int repeat);
+    void vibrate(unsigned int durationMs);
+    void vibratePattern(unsigned int durationMs[], unsigned int repeat);
+    void rumble(unsigned int durationMs, unsigned int repeat);
 
     int defaultDurationMs() const;
     void setDefaultDurationMs(int durationMs);

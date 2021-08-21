@@ -39,8 +39,9 @@ public:
 
 public Q_SLOTS:
     void vibrate() override { m_vibrator->vibrate(); };
-    void vibrate(int durationMs) override {m_vibrator->vibrate(durationMs); };
-    void rumble(int durationMs, int repeat) override { m_vibrator->rumble(durationMs, repeat); };
+    void vibrate(unsigned int durationMs) override { m_vibrator->vibrate(durationMs); };
+    void vibratePattern(unsigned int durationMs[], unsigned int repeat) override { m_vibrator->vibrate(durationMs, repeat)};
+    void rumble(unsigned int durationMs, unsigned int repeat) override { m_vibrator->rumble(durationMs, repeat); };
 
     void setState(int state) override { m_leds->setState(hfd::utils::toState(state)); };
     void setColor(unsigned int color) override { m_leds->setColor(color); }
