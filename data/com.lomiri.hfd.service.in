@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=com.lomiri.hfd
+Exec=@CMAKE_INSTALL_FULL_BINDIR@/hfd-service
+User=root
