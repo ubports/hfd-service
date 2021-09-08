@@ -45,7 +45,8 @@ install(FILES data/com.lomiri.hfd.conf
 )
 
 # Dbus service file
-install(FILES data/com.lomiri.hfd.service
+configure_file(data/com.lomiri.hfd.service.in com.lomiri.hfd.service)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/com.lomiri.hfd.service
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/dbus-1/system-services/com.lomiri.hfd.service
 )
 
