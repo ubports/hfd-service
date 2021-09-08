@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=com.lomiri.hfd
+Exec=/usr/bin/hfd-service
+User=root
