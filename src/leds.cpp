@@ -22,6 +22,9 @@
 #ifdef HAVE_LIBHYBRIS
 #include "leds-hybris.h"
 #endif
+#ifdef HAVE_LIBGBINDER
+#include "leds-binder.h"
+#endif
 
 #include <iostream>
 
@@ -41,6 +44,13 @@ protected:
 
 std::shared_ptr<Leds> Leds::create()
 {
+#ifdef HAVE_LIBGBINDER
+    if (LedsBinder::usable()) {
+        std::cout << "Using binder leds" << std::endl;
+        return std::make_shared<LedsBinder>();
+    }
+    else
+#endif
 #ifdef HAVE_LIBHYBRIS
     if (LedsHybris::usable()) {
         std::cout << "Using hybris leds" << std::endl;
@@ -67,6 +77,12 @@ std::shared_ptr<Leds> Leds::create(std::string type)
     else if (type == "hybris") {
         std::cout << "Using hybris leds" << std::endl;
         return std::make_shared<LedsHybris>();
+    }
+#endif
+#ifdef HAVE_LIBGBINDER
+    else if (type == "binder") {
+        std::cout << "Using binder leds" << std::endl;
+        return std::make_shared<LedsBinder>();
     }
 #endif
 

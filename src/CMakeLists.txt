@@ -16,6 +16,25 @@ if (HAVE_LIBHYBRIS)
     add_definitions(-DHAVE_LIBHYBRIS)
 endif()
 
+if (HAVE_LIBGBINDER)
+    include_directories(
+        ${GLIB_UTIL_INCLUDE_DIRS}
+        ${GBINDER_INCLUDE_DIRS}
+    )
+
+    set(LIBGBINDER_SRC
+        leds-binder.cpp
+        vibrator-binder.cpp
+    )
+
+    set(LIBGBINDER_LIBRARIES
+        ${GLIB_UTIL_LDFLAGS} ${GLIB_UTIL_LIBRARIES}
+        ${GBINDER_LDFLAGS} ${GBINDER_LIBRARIES}
+    )
+
+    add_definitions(-DHAVE_LIBGBINDER)
+endif()
+
 add_library(hfd-core STATIC
     leds.cpp
     leds-sysfs.cpp
@@ -26,11 +45,13 @@ add_library(hfd-core STATIC
     vibrator-legacy.cpp
 
     ${LIBHYBRIS_SRC}
+    ${LIBGBINDER_SRC}
 )
 
 target_link_libraries(hfd-core
     udev-cpp
     ${LIBHYBRIS_LIBRARIES}
+    ${LIBGBINDER_LIBRARIES}
 )
 
 set(SERVICE_SRC

@@ -25,6 +25,21 @@ else()
   message(STATUS "Bulding without libhybris support")
 endif()
 
+option(ENABLE_LIBGBINDER "Enable libgbinder support" ON)
+
+if (ENABLE_LIBGBINDER)
+  pkg_check_modules(GLIB_UTIL libglibutil)
+  pkg_check_modules(GBINDER libgbinder)
+  if(GLIB_UTIL_FOUND AND GBINDER_FOUND)
+    message(STATUS "Bulding with libgbinder support")
+    set(HAVE_LIBGBINDER true)
+  else()
+    message(WARNING "Bulding without libgbinder support, missing required dependencies!")
+  endif()
+else()
+  message(STATUS "Bulding without libgbinder support")
+endif()
+
 find_package(Qt5Core REQUIRED)
 find_package(Qt5DBus REQUIRED)
 
