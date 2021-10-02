@@ -21,6 +21,9 @@
 #include "vibrator-sysfs.h"
 #include "vibrator-legacy.h"
 #include "repeatThread.h"
+#ifdef HAVE_LIBGBINDER
+#include "vibrator-binder.h"
+#endif
 
 #include <iostream>
 
@@ -41,6 +44,13 @@ protected:
 
 std::shared_ptr<Vibrator> Vibrator::create()
 {
+#ifdef HAVE_LIBGBINDER
+    if (VibratorBinder::usable()) {
+        std::cout << "Using binder vibrator" << std::endl;
+        return std::make_shared<VibratorBinder>();
+    }
+    else
+#endif
     if (VibratorSysfs::usable()) {
         std::cout << "Using sysfs vibrator" << std::endl;
         return std::make_shared<VibratorSysfs>();
@@ -63,9 +73,16 @@ std::shared_ptr<Vibrator> Vibrator::create(std::string type)
     if (type == "ff") {
         std::cout << "Using force feedback vibrator" << std::endl;
         return std::make_shared<VibratorFF>();  
-    } else if (type == "sysfs") {
+    }
+#ifdef HAVE_LIBGBINDER
+    else if (type == "binder") {
+        std::cout << "Using binder vibrator" << std::endl;
+        return std::make_shared<VibratorBinder>();
+    }
+#endif
+    else if (type == "sysfs") {
         std::cout << "Using sysfs vibrator" << std::endl;
-        return std::make_shared<VibratorSysfs>();  
+        return std::make_shared<VibratorSysfs>();
     } else if (type == "legacy") {
         std::cout << "Using legacy vibrator" << std::endl;
         return std::make_shared<VibratorLegacy>();
